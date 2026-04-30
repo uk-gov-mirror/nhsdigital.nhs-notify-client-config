@@ -3,6 +3,7 @@ nhs-notify-repository-template/
 
 # Files and Folders in this repository to ignore
 .editorconfig
+pnpm-lock.yaml
 .github/ISSUE_TEMPLATE
 .github/CODEOWNERS
 .gitleaksignore
@@ -12,7 +13,6 @@ Makefile
 */examples/
 eslint.config.mjs
 lambdas/example-lambda/
-package-lock.json
 package.json
 scripts/terraform/terraform.mk
 src/.vscode/

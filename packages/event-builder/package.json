@@ -1,20 +1,20 @@
 {
   "dependencies": {
-    "@nhsdigital/nhs-notify-events-client-config": "*",
-    "zod": "^4.0.17"
+    "@nhsdigital/nhs-notify-events-client-config": "workspace:*",
+    "zod": "catalog:schema"
   },
   "devDependencies": {
-    "@swc/core": "^1.13.5",
-    "@swc/jest": "^0.2.37",
-    "@tsconfig/node22": "^22.0.2",
-    "@types/jest": "^30.0.0",
-    "esbuild": "^0.25.9",
-    "eslint": "^9.36.0",
-    "eslint-config-airbnb-extended": "^2.3.2",
-    "eslint-plugin-unicorn": "^61.0.2",
-    "jest": "^30.1.3",
-    "jest-mock-extended": "^4.0.0",
-    "typescript": "^5.8.2"
+    "@swc/core": "catalog:build",
+    "@swc/jest": "catalog:build",
+    "@tsconfig/node22": "catalog:tools",
+    "@types/jest": "catalog:test",
+    "esbuild": "catalog:tools",
+    "eslint": "catalog:lint",
+    "eslint-config-airbnb-extended": "catalog:lint",
+    "eslint-plugin-unicorn": "catalog:lint",
+    "jest": "catalog:test",
+    "jest-mock-extended": "catalog:test",
+    "typescript": "catalog:tools"
   },
   "name": "@nhsdigital/nhs-notify-client-config-event-builder",
   "private": true,

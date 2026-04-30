@@ -1,4 +1,10 @@
 {
+  "source": [
+    "package.json",
+    "docs/package.json",
+    "frontend/package.json",
+    "packages/*/package.json"
+  ],
   "versionGroups": [
     {
       "dependencies": ["@nhsdigital/nhs-notify-events-client-config"],

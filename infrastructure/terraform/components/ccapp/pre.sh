@@ -1,6 +1,8 @@
 echo Running pre.sh
 
-npm ci
+repo_root="$(git rev-parse --show-toplevel)"
+
+pnpm --dir "$repo_root" install --frozen-lockfile
 
 echo About to build lambdas
-npm run build-lambda
+pnpm --dir "$repo_root" run build-lambda

@@ -22,7 +22,7 @@ import { z } from "zod";
  * });
  */
 export function idRef<
-  T extends z.ZodObject<Record<string, z.ZodTypeAny>>,
+  T extends z.ZodObject,
   K extends keyof z.infer<T> & string = "id",
 >(schema: T, idFieldName?: K, entityName?: string): T["shape"][K] {
   const { shape } = schema;

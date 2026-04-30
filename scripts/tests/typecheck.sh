@@ -5,5 +5,5 @@ set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
 # run typecheck
-npm ci
-npm run typecheck
+pnpm install --frozen-lockfile
+pnpm run typecheck

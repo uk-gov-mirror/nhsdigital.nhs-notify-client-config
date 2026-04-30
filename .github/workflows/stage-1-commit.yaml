@@ -19,6 +19,10 @@ on:
         description: "Node.js version, set by the CI/CD pipeline workflow"
         required: true
         type: string
+      pnpm_version:
+        description: "pnpm version, set by the CI/CD pipeline workflow"
+        required: true
+        type: string
       python_version:
         description: "Python version, set by the CI/CD pipeline workflow"
         required: true
@@ -270,20 +274,21 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      # Simplified caching - template management has more complex caching of installed modules from another build step
-      - name: "Cache node_modules"
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      - name: "Setup pnpm"
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
         with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-node-${{ inputs.nodejs_version }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ inputs.nodejs_version }}-
+          version: "${{ inputs.pnpm_version }}"
+          cache: true
+      - name: "Use Node.js"
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: '.tool-versions'
+          cache: 'pnpm'
 
       - name: "Re-generate schemas"
         run: |
-          npm ci --workspace packages/events
-          npm --workspace packages/events run gen:jsonschema
+          pnpm install --frozen-lockfile
+          pnpm --filter @nhsdigital/nhs-notify-events-client-config run gen:jsonschema
 
       - name: Check for schema changes
         run: git diff --quiet packages/events/schemas

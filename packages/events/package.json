@@ -1,18 +1,18 @@
 {
   "author": "",
   "dependencies": {
-    "@asyncapi/bundler": "^0.6.4",
-    "zod": "^4.0.17"
+    "@asyncapi/bundler": "catalog:schema",
+    "zod": "catalog:schema"
   },
   "description": "Schemas for NHS Notify client configuration",
   "devDependencies": {
-    "@stoplight/spectral-cli": "^6.15.1",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^24.9.1",
-    "jest": "^30.1.3",
-    "ts-jest": "^29.4.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.2"
+    "@stoplight/spectral-cli": "catalog:schema",
+    "@types/jest": "catalog:test",
+    "@types/node": "catalog:tools",
+    "jest": "catalog:test",
+    "ts-jest": "catalog:test",
+    "ts-node": "catalog:tools",
+    "typescript": "catalog:tools"
   },
   "main": "src/index.ts",
   "name": "@nhsdigital/nhs-notify-events-client-config",
@@ -24,14 +24,14 @@
     "build": "tsc",
     "gen:asyncapi": "mkdir -p ./dist/asyncapi && ts-node src/cli/bundle-asyncapi.ts",
     "gen:jsonschema": "ts-node src/cli/generate-json.ts",
-    "lint": "npm run lint:node && npm run lint:schema",
+    "lint": "pnpm run lint:node && pnpm run lint:schema",
     "lint:fix": "eslint . --fix",
     "lint:node": "eslint .",
     "lint:schema": "spectral lint schemas/client-config.yaml",
-    "prebuild": "rm -rf dist && npm run gen:asyncapi",
-    "pregen:asyncapi": "npm run gen:jsonschema",
+    "prebuild": "rm -rf dist && pnpm run gen:asyncapi",
+    "pregen:asyncapi": "pnpm run gen:jsonschema",
     "pregen:jsonschema": "rm -rf ./schemas/json",
-    "prelint:schema": "npm run gen:jsonschema",
+    "prelint:schema": "pnpm run gen:jsonschema",
     "test": "jest",
     "test:unit": "jest"
   },

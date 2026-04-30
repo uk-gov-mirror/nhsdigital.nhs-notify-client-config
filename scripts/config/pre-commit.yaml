@@ -16,7 +16,6 @@ repos:
         args: ['--autofix']
         exclude: |
           (?x)^(
-            package-lock.json|
             packages/events/schemas/domain/.*\.json
           )$
     # -   id: ...

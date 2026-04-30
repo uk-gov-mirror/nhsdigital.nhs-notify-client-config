@@ -17,6 +17,8 @@ Environment variables:
   FORCE_USE_DOCKER=true  Force execution through Docker even if Trivy is installed locally.
   VERBOSE=true           Enable bash -x tracing.
 EOF
+
+  return 0
 }
 
 function main() {
@@ -26,35 +28,38 @@ function main() {
   local dir_to_scan="."
 
   while [[ $# -gt 0 ]]; do
-    case "$1" in
+    local current_arg="$1"
+    case "$current_arg" in
       --mode|-m)
         if [[ $# -lt 2 ]]; then
           echo "Error: --mode requires an argument." >&2
           usage
           exit 1
         fi
-        scan_mode="$2"
+        local mode_arg="$2"
+        scan_mode="$mode_arg"
         shift 2
+          exit 0
+          ;;
+        --)
+          shift
+          break
+          ;;
+        -*)
         ;;
+          usage
+          exit 1
+          ;;
+        *)
+          dir_to_scan="$current_arg"
+          shift
       --help|-h)
-        usage
-        exit 0
-        ;;
-      --)
-        shift
-        break
-        ;;
-      -*)
-        echo "Unknown option: $1" >&2
-        usage
-        exit 1
-        ;;
-      *)
-        dir_to_scan="$1"
+      dir_to_scan="$trailing_arg"
         shift
         ;;
     esac
-  done
+      local trailing_arg="$1"
+      dir_to_scan="$trailing_arg"
 
   if [[ $# -gt 0 ]]; then
     dir_to_scan="$1"
@@ -81,6 +86,8 @@ function main() {
   else
     run-trivy-in-docker "$scan_mode" "$dir_to_scan"
   fi
+
+  return 0
 }
 
 function run-trivy-natively() {
@@ -96,6 +103,8 @@ function run-trivy-natively() {
     local status=$?
     check-trivy-status "$status"
   fi
+
+  return 0
 }
 
 function run-trivy-in-docker() {
@@ -117,6 +126,8 @@ function run-trivy-in-docker() {
     local status=$?
     check-trivy-status "$status"
   fi
+
+  return 0
 }
 
 function execute-trivy-command() {
@@ -136,6 +147,8 @@ function execute-trivy-command() {
       --severity HIGH,CRITICAL \
       --include-dev-deps
   fi
+
+  return 0
 }
 
 function execute-trivy-in-docker() {
@@ -163,6 +176,8 @@ function execute-trivy-in-docker() {
       --severity HIGH,CRITICAL \
       --include-dev-deps
   fi
+
+  return 0
 }
 
 function check-trivy-status() {
@@ -178,7 +193,9 @@ function check-trivy-status() {
 }
 
 function is-arg-true() {
-  if [[ "$1" =~ ^(true|yes|y|on|1|TRUE|YES|Y|ON)$ ]]; then
+  local arg="$1"
+
+  if [[ "$arg" =~ ^(true|yes|y|on|1|TRUE|YES|Y|ON)$ ]]; then
     return 0
   else
     return 1
