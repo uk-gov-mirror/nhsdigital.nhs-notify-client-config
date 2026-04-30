@@ -14,14 +14,18 @@
     "ts-node": "catalog:tools",
     "typescript": "catalog:tools"
   },
-  "main": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
   "name": "@nhsdigital/nhs-notify-events-client-config",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "repository": "git@github.com:NHSDigital/nhs-notify-client-config.git",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p ./tsconfig.build.json && pnpm run copy:assets",
+    "copy:assets": "mkdir -p dist && cp -R schemas dist",
     "gen:asyncapi": "mkdir -p ./dist/asyncapi && ts-node src/cli/bundle-asyncapi.ts",
     "gen:jsonschema": "ts-node src/cli/generate-json.ts",
     "lint": "pnpm run lint:node && pnpm run lint:schema",
@@ -30,10 +34,12 @@
     "lint:schema": "spectral lint schemas/client-config.yaml",
     "prebuild": "rm -rf dist && pnpm run gen:asyncapi",
     "pregen:asyncapi": "pnpm run gen:jsonschema",
-    "pregen:jsonschema": "rm -rf ./schemas/json",
+    "pregen:jsonschema": "rm -f ./schemas/domain/*.json",
     "prelint:schema": "pnpm run gen:jsonschema",
+    "prepublishOnly": "pnpm run build",
     "test": "jest",
     "test:unit": "jest"
   },
+  "types": "dist/index.d.ts",
   "version": "1.0.0"
 }

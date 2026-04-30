@@ -2,12 +2,10 @@ import {
   $CampaignDisabledEvent,
   $CampaignIntEvent,
   $CampaignProdEvent,
-  CampaignEvent,
-} from "@nhsdigital/nhs-notify-events-client-config/src/events/campaign-published-event";
-import {
   $Campaign,
+  CampaignEvent,
   Campaign,
-} from "@nhsdigital/nhs-notify-events-client-config/src/domain";
+} from "@nhsdigital/nhs-notify-events-client-config";
 import {
   buildEnvelope,
   filterScoped,

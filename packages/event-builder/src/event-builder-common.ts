@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
-import { Environment } from "@nhsdigital/nhs-notify-events-client-config/src/domain/common";
 import schemaPackage from "@nhsdigital/nhs-notify-events-client-config/package.json";
+
+type Environment = "INT" | "PROD";
 
 export const eventSource =
   "//notify.nhs.uk/app/nhs-notify-client-config-dev/main";

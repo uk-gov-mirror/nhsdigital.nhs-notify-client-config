@@ -1,7 +1,7 @@
 import {
   $ClientIntEvent,
   $ClientProdEvent,
-} from "@nhsdigital/nhs-notify-events-client-config/src/events/client-published-event";
+} from "@nhsdigital/nhs-notify-events-client-config";
 import schemaPackage from "@nhsdigital/nhs-notify-events-client-config/package.json";
 import { buildClientEvent } from "../event-builder";
 
@@ -59,11 +59,13 @@ describe("buildClientEvent", () => {
     const intEvent = events[0];
     expect(
       intEvent.data.messageRequestsApimApplications?.every(
-        (a) => a.environment === "INT",
+        (a: { environment: "INT" | "PROD" }) => a.environment === "INT",
       ),
     ).toBe(true);
     expect(
-      intEvent.data.clientSubscriptions?.every((s) => s.environment === "INT"),
+      intEvent.data.clientSubscriptions?.every(
+        (s: { environment: "INT" | "PROD" }) => s.environment === "INT",
+      ),
     ).toBe(true);
   });
 

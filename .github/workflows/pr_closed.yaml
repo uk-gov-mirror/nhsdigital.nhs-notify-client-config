@@ -21,7 +21,7 @@ jobs:
     outputs:
       deploy: ${{ steps.check.outputs.deploy }}
     steps:
-      - name: Check if PR was merged or wor§kflow is triggered by workflow_dispatch
+      - name: Check if PR was merged or workflow is triggered by workflow_dispatch
         id: check
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -33,6 +33,44 @@ jobs:
           else
             echo "deploy=false" >> $GITHUB_OUTPUT
             echo "Job not triggered by workflow_dispatch or Merged PR - Skipping 'deploy-main'"
+          fi
+
+  check-event-schemas-version-change:
+    name: Check for event schemas package version change
+    needs: check-merge-or-workflow-dispatch
+    if: needs.check-merge-or-workflow-dispatch.outputs.deploy == 'true'
+    outputs:
+      version_changed: ${{ steps.check-version.outputs.version_changed }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: ".tool-versions"
+
+      - name: Check if local version differs from latest published version
+        id: check-version
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          published_version=$(npm view @nhsdigital/nhs-notify-events-client-config --registry=https://npm.pkg.github.com --json 2>/dev/null | jq -r '.["dist-tags"].latest // "null"')
+          echo "Published version: $published_version"
+
+          local_version=$(jq -r '.version' packages/events/package.json)
+          echo "Local version: $local_version"
+
+          if [[ $local_version = $published_version ]]; then
+            echo "Local version is the same as the latest published version - skipping publish"
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Local version is different to the latest published version - publishing new version"
+            echo "version_changed=true" >> $GITHUB_OUTPUT
           fi
 
   deploy-main:
@@ -61,3 +99,45 @@ jobs:
             --targetAccountGroup "nhs-notify-client-config-dev" \
             --targetComponent "${{ matrix.component }}" \
             --terraformAction "apply"
+
+  publish-event-schemas:
+    name: Publish event schemas package to GitHub package registry
+    needs:
+      - check-event-schemas-version-change
+    if: needs.check-event-schemas-version-change.outputs.version_changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Detect pnpm version
+        id: pnpm-version
+        run: |
+          echo "version=$(grep '^pnpm ' .tool-versions | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+        with:
+          version: ${{ steps.pnpm-version.outputs.version }}
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: ".tool-versions"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd packages/events
+          npm publish --registry=https://npm.pkg.github.com

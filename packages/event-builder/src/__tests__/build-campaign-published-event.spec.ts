@@ -1,7 +1,7 @@
 import {
   $CampaignIntEvent,
   $CampaignProdEvent,
-} from "@nhsdigital/nhs-notify-events-client-config/src/events/campaign-published-event";
+} from "@nhsdigital/nhs-notify-events-client-config";
 import buildCampaignEvent from "../campaign-event-builder";
 
 describe("buildCampaignEvent", () => {

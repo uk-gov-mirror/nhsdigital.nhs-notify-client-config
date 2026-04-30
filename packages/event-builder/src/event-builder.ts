@@ -1,13 +1,11 @@
 import {
+  $Client,
   $ClientDisabledEvent,
   $ClientIntEvent,
   $ClientProdEvent,
-  ClientEvent,
-} from "@nhsdigital/nhs-notify-events-client-config/src/events/client-published-event";
-import {
-  $Client,
   Client,
-} from "@nhsdigital/nhs-notify-events-client-config/src/domain";
+  ClientEvent,
+} from "@nhsdigital/nhs-notify-events-client-config";
 import {
   buildEnvelope,
   filterScoped,

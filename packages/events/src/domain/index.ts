@@ -20,6 +20,17 @@ export { $Queue, $QueueSchedulePeriod } from "./queue";
 export type { Queue, QueueSchedulePeriod } from "./queue";
 export { $ClientQuota } from "./client-quota";
 export type { ClientQuota } from "./client-quota";
+export {
+  $Environment,
+  $EnvironmentStatus,
+  $ParameterStorePath,
+  $Slug,
+  $Version,
+  ConfigBase,
+  validateUniqueEnvironments,
+  validateUniqueStringValues,
+} from "./common";
+export type { Environment, EnvironmentStatus, Version } from "./common";
 export * as RfrCoding from "./rfr-coding";
 export { $ApimApplication } from "./apim-application";
 export type { ApimApplication } from "./apim-application";

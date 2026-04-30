@@ -22,6 +22,7 @@
     "build": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "pretypecheck": "pnpm --filter @nhsdigital/nhs-notify-events-client-config run build",
     "test": "jest",
     "test:unit": "jest",
     "typecheck": "tsc --noEmit"
