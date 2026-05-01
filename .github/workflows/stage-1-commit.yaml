@@ -276,6 +276,7 @@ jobs:
     name: Check whether schema version checks should be skipped
     runs-on: ubuntu-latest
     permissions:
+      issues: read
       pull-requests: read
     outputs:
       skip_schema_version_check: ${{ steps.check.outputs.skip_schema_version_check }}
@@ -283,7 +284,7 @@ jobs:
       - name: Check for skip-schema-version-check label
         id: check
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [[ -z "${{ inputs.pr_number }}" ]]; then
             echo "No pull request number was provided - schema version checks will run"
@@ -291,9 +292,14 @@ jobs:
             exit 0
           fi
 
-          labels=$(gh pr view "${{ inputs.pr_number }}" --json labels --jq '.labels[].name' || true)
+          has_skip_schema_version_check=$(gh api \
+            "/repos/${{ github.repository }}/issues/${{ inputs.pr_number }}/labels" \
+            --jq 'map(.name == "skip-schema-version-check") | any')
 
-          if printf '%s\n' "$labels" | grep -Fxq 'skip-schema-version-check'; then
+          echo "Checked PR #${{ inputs.pr_number }} in repository ${{ github.repository }}"
+          echo "skip-schema-version-check present: $has_skip_schema_version_check"
+
+          if [[ "$has_skip_schema_version_check" == 'true' ]]; then
             echo "PR #${{ inputs.pr_number }} has the skip-schema-version-check label - schema version checks will be skipped"
             echo "skip_schema_version_check=true" >> $GITHUB_OUTPUT
           else

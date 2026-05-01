@@ -61,7 +61,12 @@ jobs:
           branch_name=${GITHUB_HEAD_REF:-$(echo $GITHUB_REF | sed 's#refs/heads/##')}
           echo "Current branch is '$branch_name'"
 
-          pr_json=$(gh pr list --head "$branch_name" --state open --json number --limit 1)
+          pr_json=$(gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --head "$GITHUB_REPOSITORY_OWNER:$branch_name" \
+            --state open \
+            --json number \
+            --limit 1)
           pr_number=$(echo "$pr_json" | jq -r '.[0].number // empty')
 
           if [[ -n "$pr_number" ]]; then
@@ -94,6 +99,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
+      issues: read
       packages: read
       pull-requests: read
     with:
