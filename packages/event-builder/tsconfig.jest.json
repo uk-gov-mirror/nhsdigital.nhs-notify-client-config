@@ -1,4 +1,14 @@
 {
+  "compilerOptions": {
+    "paths": {
+      "@nhsdigital/nhs-notify-events-client-config": [
+        "../events/src/index.ts"
+      ],
+      "@nhsdigital/nhs-notify-events-client-config/package.json": [
+        "../events/package.json"
+      ]
+    }
+  },
   "exclude": [
     "./dist/"
   ],

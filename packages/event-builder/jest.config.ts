@@ -11,7 +11,7 @@ const config: Config = {
   moduleFileExtensions: ["ts", "js", "json", "node"],
   moduleNameMapper: {
     "^@nhsdigital/nhs-notify-events-client-config$":
-      "<rootDir>/../../packages/events/src",
+      "<rootDir>/../../packages/events/src/index.ts",
     "^@nhsdigital/nhs-notify-events-client-config/package.json$":
       "<rootDir>/../../packages/events/package.json",
   },
