@@ -1,6 +1,7 @@
 {
   "dependencies": {},
   "devDependencies": {
+    "@eslint/eslintrc": "catalog:lint",
     "@eslint/js": "catalog:lint",
     "@stylistic/eslint-plugin": "catalog:lint",
     "@tsconfig/node22": "catalog:tools",

@@ -1,10 +1,10 @@
 import {
+  $Campaign,
   $CampaignDisabledEvent,
   $CampaignIntEvent,
   $CampaignProdEvent,
-  $Campaign,
-  CampaignEvent,
   Campaign,
+  CampaignEvent,
 } from "@nhsdigital/nhs-notify-events-client-config";
 import {
   buildEnvelope,

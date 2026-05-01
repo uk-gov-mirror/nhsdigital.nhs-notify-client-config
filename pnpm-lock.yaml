@@ -51,6 +51,9 @@ catalogs:
       specifier: ^1.86.0
       version: 1.99.0
   lint:
+    '@eslint/eslintrc':
+      specifier: ^3.3.5
+      version: 3.3.5
     '@eslint/js':
       specifier: ^9.39.4
       version: 9.39.4
@@ -173,6 +176,9 @@ importers:
 
   .:
     devDependencies:
+      '@eslint/eslintrc':
+        specifier: catalog:lint
+        version: 3.3.5
       '@eslint/js':
         specifier: catalog:lint
         version: 9.39.4
