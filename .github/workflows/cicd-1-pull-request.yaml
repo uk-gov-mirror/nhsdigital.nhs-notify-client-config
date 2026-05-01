@@ -63,7 +63,7 @@ jobs:
 
           pr_json=$(gh pr list \
             --repo "$GITHUB_REPOSITORY" \
-            --head "$GITHUB_REPOSITORY_OWNER:$branch_name" \
+            --head "$branch_name" \
             --state open \
             --json number \
             --limit 1)
