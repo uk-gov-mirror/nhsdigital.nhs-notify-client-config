@@ -27,6 +27,10 @@ on:
         description: "Python version, set by the CI/CD pipeline workflow"
         required: true
         type: string
+      pr_number:
+        description: "Pull request number for the current branch when one exists"
+        required: false
+        type: string
       #TODO - Re-visit Trivy usage https://nhsd-jira.digital.nhs.uk/browse/CCM-15549
       # skip_trivy_package:
       #   description: "Skip Trivy package scan when true"
@@ -268,10 +272,41 @@ jobs:
           echo "Detected package version $version in main branch"
           echo "main_version=$version" >> $GITHUB_OUTPUT
 
+  detect-skip-schema-version-check:
+    name: Check whether schema version checks should be skipped
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      skip_schema_version_check: ${{ steps.check.outputs.skip_schema_version_check }}
+    steps:
+      - name: Check for skip-schema-version-check label
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ -z "${{ inputs.pr_number }}" ]]; then
+            echo "No pull request number was provided - schema version checks will run"
+            echo "skip_schema_version_check=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          labels=$(gh pr view "${{ inputs.pr_number }}" --json labels --jq '.labels[].name' || true)
+
+          if printf '%s\n' "$labels" | grep -Fxq 'skip-schema-version-check'; then
+            echo "PR #${{ inputs.pr_number }} has the skip-schema-version-check label - schema version checks will be skipped"
+            echo "skip_schema_version_check=true" >> $GITHUB_OUTPUT
+          else
+            echo "PR #${{ inputs.pr_number }} does not have the skip-schema-version-check label - schema version checks will run"
+            echo "skip_schema_version_check=false" >> $GITHUB_OUTPUT
+          fi
+
   check-schema-version-change:
     name: Check event schema version has been updated
-    needs: detect-event-schema-package-changes
-    if: needs.detect-event-schema-package-changes.outputs.changed == 'true'
+    needs:
+      - detect-event-schema-package-changes
+      - detect-skip-schema-version-check
+    if: needs.detect-event-schema-package-changes.outputs.changed == 'true' && needs.detect-skip-schema-version-check.outputs.skip_schema_version_check != 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -295,8 +330,10 @@ jobs:
 
   check-event-schemas-version-change:
     name: Check for event schemas package version change
-    needs: detect-event-schema-package-changes
-    if: needs.detect-event-schema-package-changes.outputs.changed == 'true'
+    needs:
+      - detect-event-schema-package-changes
+      - detect-skip-schema-version-check
+    if: needs.detect-event-schema-package-changes.outputs.changed == 'true' && needs.detect-skip-schema-version-check.outputs.skip_schema_version_check != 'true'
     outputs:
       version_changed: ${{ steps.check-version.outputs.version_changed }}
     runs-on: ubuntu-latest
