@@ -4,22 +4,30 @@ inputs:
   version:
     description: "Version number"
     required: true
+  nodejs_version:
+    description: "Node.js version, set by the CI/CD pipeline workflow"
+    required: true
+  pnpm_version:
+    description: "pnpm version, set by the CI/CD pipeline workflow"
+    required: true
 runs:
   using: "composite"
   steps:
     - name: Checkout
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-    - name: Setup pnpm
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - name: "Setup pnpm"
       uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
       with:
-        version: 10.33.0
+        version: "${{ inputs.pnpm_version }}"
         cache: true
     - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
-        node-version: 18
-        cache: pnpm
-    - name: Install node dependencies
-      run: pnpm install --frozen-lockfile
+        node-version: ${{ inputs.nodejs_version }}
+    - name: Install node dependencies with pnpm
+      working-directory: ./docs
+      run: |
+        pnpm import
+        pnpm install --frozen-lockfile
       shell: bash
     - name: Setup Ruby
       uses: ruby/setup-ruby@3783f195e29b74ae398d7caca108814bbafde90e # v1.180.1
